@@ -1,20 +1,20 @@
 # source shflags
-. ../src/shflags
+. ./lib/shflags
 
-# define a 'name' command-line string flag
-DEFINE_string 'databases'			''					'' 'd'	'required'
-DEFINE_string 'backup-directory'	''					'' 'bd'	'required'
-DEFINE_string 'ibbackup'			'xtrabackup_55'		'' 'i'
-DEFINE_string 'defaults-file'		'/etc/mysql/my.cnf' '' 'df'
+# FLAGS
+DEFINE_string 'databases'		''			'' 'd'	'required'
+DEFINE_string 'file'			''			'' 'f'	'required'
 
 # parse the command-line
 FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
 
+TDIR=`mktemp -d`
+trap "{ cd - ; rm -rf $TDIR; exit 255; }" SIGINT
 
-innobackupex --ibbackup=${FLAGS_ibbackup} --databases="${FLAGS_databases}" --defaults-file=${FLAGS_defaults_file} ${FLAGS_backup_directory} --no-timestamp
+xtrabackup --backup  --databases="${FLAGS_databases}" --target-dir=${TDIR}
 
-cd ${FLAGS_backup_directory}
+cd $TDIR
 for DATABASE in *; do
   if [ ! -d "$DATABASE" ]; then
     continue
@@ -28,5 +28,10 @@ for DATABASE in *; do
   mysqldump --no-data --single-transaction \
     "$DATABASE_DECODED" >"$DATABASE.ddl.sql"
 done
+cd -
 
-innobackupex --apply-log --export ${FLAGS_backup_directory}
+xtrabackup --prepare --export --target-dir=$TDIR
+
+rm -f ${FLAGS_file}
+tar -cpvzf ${FLAGS_file} -C $TDIR .
+rm -rf $TDIR
