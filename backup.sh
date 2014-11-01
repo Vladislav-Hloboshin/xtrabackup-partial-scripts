@@ -2,8 +2,9 @@
 . ./lib/shflags
 
 # FLAGS
-DEFINE_string 'databases'		''			'' 'd'	'required'
-DEFINE_string 'file'			''			'' 'f'	'required'
+DEFINE_string 'databases'	''			''	'db'	'required'
+DEFINE_string 'file'		''			''	'f'	'required'
+DEFINE_string 'user'            'xtrabackup'            ''      'u'
 
 # parse the command-line
 FLAGS "$@" || exit 1
@@ -12,7 +13,7 @@ eval set -- "${FLAGS_ARGV}"
 TDIR=`mktemp -d`
 trap "{ cd - ; rm -rf $TDIR; exit 255; }" SIGINT
 
-xtrabackup --backup  --databases="${FLAGS_databases}" --target-dir=${TDIR}
+xtrabackup --backup --user="${FLAGS_user}"  --databases="${FLAGS_databases}" --target-dir=${TDIR}
 
 cd $TDIR
 for DATABASE in *; do
