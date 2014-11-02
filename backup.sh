@@ -4,6 +4,7 @@ SHFLAGS_LIB_PATH=$BASEDIR/lib/shflags
 source ${SHFLAGS_LIB_PATH}
 if [[ $? -ne 0 ]]; then
     echo "Unable to source shFlags library: ${SHFLAGS_LIB_PATH}"
+	exit 1
 fi
 
 # FLAGS

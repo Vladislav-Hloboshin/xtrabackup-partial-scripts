@@ -1,4 +1,5 @@
-SHFLAGS_LIB_PATH=./lib/shflags
+BASEDIR=$(dirname $0)
+SHFLAGS_LIB_PATH=$BASEDIR/lib/shflags
 
 source ${SHFLAGS_LIB_PATH}
 if [[ $? -ne 0 ]]; then
