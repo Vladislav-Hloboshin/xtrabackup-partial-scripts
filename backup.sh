@@ -1,5 +1,10 @@
-# source shflags
-. ./lib/shflags
+SHFLAGS_LIB_PATH=./lib/shflags
+
+source ${SHFLAGS_LIB_PATH}
+if [[ $? -ne 0 ]]; then
+    echo "Unable to source shFlags library: ${SHFLAGS_LIB_PATH}"
+    exit 1
+fi
 
 # FLAGS
 DEFINE_string 'databases'	''			''	'db'	'required'
