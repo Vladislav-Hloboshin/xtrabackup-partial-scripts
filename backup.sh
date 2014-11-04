@@ -32,7 +32,7 @@ for DATABASE in *; do
     perl -ne 's/@([0-9a-f]{4})/chr(hex "0x${1}")/ge; print;'
   )"
 
-  mysqldump --no-data --single-transaction --routines "$DATABASE_DECODED" >"$DATABASE.ddl.sql"
+  mysqldump --user="${FLAGS_user}" --no-data --single-transaction --routines "$DATABASE_DECODED" >"$DATABASE.ddl.sql"
 done
 cd -
 
