@@ -26,13 +26,13 @@ cd $TDIR
 tar -xvzpf ${FLAGS_file}
 
 mysql -u"${FLAGS_user}" ${FLAGS_database} < ${FLAGS_database}.ddl.sql
-for FILE in ${FLAGS_database}/*.exp; do
-  TABLE="$(basename "${FILE}" .exp)"
+for FILE in ${FLAGS_database}/*.cfg; do
+  TABLE="$(basename "${FILE}" .cfg)"
 
   # Reset ownership and permissions on our
   # backup files to be what MySQL expects.
-  chmod --reference="${FLAGS_datadir}/${FLAGS_database}/$TABLE.ibd" "${FLAGS_database}/$TABLE.exp" "${FLAGS_database}/$TABLE.ibd"
-  chown --reference="${FLAGS_datadir}/${FLAGS_database}/$TABLE.ibd" "${FLAGS_database}/$TABLE.exp" "${FLAGS_database}/$TABLE.ibd"
+  chmod --reference="${FLAGS_datadir}/${FLAGS_database}/$TABLE.ibd" "${FLAGS_database}/$TABLE.cfg" "${FLAGS_database}/$TABLE.ibd"
+  chown --reference="${FLAGS_datadir}/${FLAGS_database}/$TABLE.ibd" "${FLAGS_database}/$TABLE.cfg" "${FLAGS_database}/$TABLE.ibd"
 
   # Instruct MySQL to discard the target tablespace.
   echo "discard tablespace for $TABLE"
