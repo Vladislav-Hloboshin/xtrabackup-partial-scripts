@@ -39,7 +39,7 @@ for FILE in ${FLAGS_database}/*.exp; do
   mysql -u"${FLAGS_user}" --execute "set FOREIGN_KEY_CHECKS=0; alter table ${FLAGS_database}.$TABLE discard tablespace;"
 
   # Overwrite the target tablespace with our backup.
-  mv -f "${FLAGS_database}/$TABLE.exp" "${FLAGS_datadir}/${FLAGS_database}/$TABLE.exp"
+  mv -f "${FLAGS_database}/$TABLE.cfg" "${FLAGS_datadir}/${FLAGS_database}/$TABLE.cfg"
   mv -f "${FLAGS_database}/$TABLE.ibd" "${FLAGS_datadir}/${FLAGS_database}/$TABLE.ibd"
 
   # Instruct MySQL to import the target tablespace.
