@@ -17,6 +17,7 @@ DEFINE_string 'user'		'xtrabackup'		''	'u'
 FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
 
+mysql -u"${FLAGS_user}" --execute "drop database if exists ${FLAGS_database};"
 mysql -u"${FLAGS_user}" --execute "drop database if exists ${FLAGS_database}; create database ${FLAGS_database};" || exit 1
 
 TDIR=`mktemp -d`
