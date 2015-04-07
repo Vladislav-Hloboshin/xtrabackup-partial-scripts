@@ -1,14 +1,14 @@
 BASEDIR=$(dirname $0)
 SHFLAGS_LIB_PATH=$BASEDIR/lib/shflags
 
-source ${SHFLAGS_LIB_PATH}
+source $SHFLAGS_LIB_PATH
 if [[ $? -ne 0 ]]; then
     echo "Unable to source shFlags library: ${SHFLAGS_LIB_PATH}"
 	exit 1
 fi
 
 # FLAGS
-DEFINE_string 'databases'	''			''	'db'	'required'
+DEFINE_string 'database'	''			''	'db'	'required'
 DEFINE_string 'file'		''			''	'f'	'required'
 DEFINE_string 'user'            'xtrabackup'            ''      'u'
 
@@ -19,25 +19,16 @@ eval set -- "${FLAGS_ARGV}"
 TDIR=`mktemp -d`
 trap "{ cd - ; rm -rf $TDIR; exit 255; }" SIGINT
 
-xtrabackup --backup --user="${FLAGS_user}"  --databases="${FLAGS_databases}" --target-dir=${TDIR}
+xtrabackup --backup --user="${FLAGS_user}"  --databases=$FLAGS_database --target-dir=$TDIR
 
-cd $TDIR
-for DATABASE in *; do
-  if [ ! -d "$DATABASE" ]; then
-    continue
-  fi
-
-  DATABASE_DECODED="$(
-    echo "$DATABASE" |
-    perl -ne 's/@([0-9a-f]{4})/chr(hex "0x${1}")/ge; print;'
-  )"
-
-  mysqldump --user="${FLAGS_user}" --no-data --single-transaction --routines "$DATABASE_DECODED" >"$DATABASE.ddl.sql"
-done
-cd -
+mysqldump --user="${FLAGS_user}" --no-data --single-transaction --routines $FLAGS_database > $TDIR/$FLAGS_database/ddl.sql
 
 xtrabackup --prepare --export --target-dir=$TDIR
 
-rm -f ${FLAGS_file}
-tar -cpvzf ${FLAGS_file} -C $TDIR .
+rm -f $TDIR/ibdata1
+
+mv $TDIR/xtrabackup_* $TDIR/$FLAGS_database
+
+rm -f $FLAGS_file
+tar -cpvzf $FLAGS_file -C $TDIR/$FLAGS_database .
 rm -rf $TDIR

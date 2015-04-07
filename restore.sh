@@ -26,31 +26,31 @@ trap "{ cd - ; rm -rf $TDIR; exit 255; }" SIGINT
 cd $TDIR
 tar -xvzpf ${FLAGS_file}
 
-mysql -u"${FLAGS_user}" ${FLAGS_database} < ${FLAGS_database}.ddl.sql
-for FILE in ${FLAGS_database}/*.cfg; do
+mysql -u"${FLAGS_user}" ${FLAGS_database} < ddl.sql
+for FILE in *.cfg; do
   TABLE="$(basename "${FILE}" .cfg)"
 
   # Reset ownership and permissions on our
   # backup files to be what MySQL expects.
-  chmod --reference="${FLAGS_datadir}/${FLAGS_database}/$TABLE.ibd" "${FLAGS_database}/$TABLE.cfg" "${FLAGS_database}/$TABLE.ibd"
-  chown --reference="${FLAGS_datadir}/${FLAGS_database}/$TABLE.ibd" "${FLAGS_database}/$TABLE.cfg" "${FLAGS_database}/$TABLE.ibd"
+  chmod --reference="${FLAGS_datadir}/${FLAGS_database}/$TABLE.ibd" "$TABLE.cfg" "$TABLE.ibd"
+  chown --reference="${FLAGS_datadir}/${FLAGS_database}/$TABLE.ibd" "$TABLE.cfg" "$TABLE.ibd"
 
   # Instruct MySQL to discard the target tablespace.
   echo "discard tablespace for $TABLE"
-  mysql -u"${FLAGS_user}" --execute "set FOREIGN_KEY_CHECKS=0; alter table ${FLAGS_database}.$TABLE discard tablespace;"
+  mysql -u"${FLAGS_user}" --database=$FLAGS_database --execute "set FOREIGN_KEY_CHECKS=0; alter table $TABLE discard tablespace;"
 
   # Overwrite the target tablespace with our backup.
-  mv -f "${FLAGS_database}/$TABLE.cfg" "${FLAGS_datadir}/${FLAGS_database}/$TABLE.cfg"
-  mv -f "${FLAGS_database}/$TABLE.ibd" "${FLAGS_datadir}/${FLAGS_database}/$TABLE.ibd"
+  mv -f "$TABLE.cfg" "${FLAGS_datadir}/${FLAGS_database}/$TABLE.cfg"
+  mv -f "$TABLE.ibd" "${FLAGS_datadir}/${FLAGS_database}/$TABLE.ibd"
 
   # Instruct MySQL to import the target tablespace.
   echo "import tablespace for $TABLE"
-  mysql -u"${FLAGS_user}" --execute "alter table ${FLAGS_database}.$TABLE import tablespace;"
+  mysql -u"${FLAGS_user}" --database=$FLAGS_database --execute "alter table $TABLE import tablespace;"
 
   # Instruct MySQL to analyze the resulting table and update
   # its table statistics.
   echo "analyze table $TABLE"
-  mysql -u"${FLAGS_user}" --execute "analyze table ${FLAGS_database}.$TABLE;"
+  mysql -u"${FLAGS_user}" --database=$FLAGS_database --execute "analyze table $TABLE;"
 done
 
 rm -rf $TDIR
