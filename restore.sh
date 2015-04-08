@@ -18,7 +18,8 @@ FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
 
 mysql -u"${FLAGS_user}" --execute "drop database if exists ${FLAGS_database};" 2> /dev/null
-mysql -u"${FLAGS_user}" --execute "drop database if exists ${FLAGS_database}; create database ${FLAGS_database};" || exit 1
+rm -rf $FLAGS_datadir/$FLAGS_database
+mysql -u"${FLAGS_user}" --execute "create database ${FLAGS_database};" || exit 1
 
 TDIR=`mktemp -d`
 trap "{ cd - ; rm -rf $TDIR; exit 255; }" SIGINT
@@ -53,4 +54,5 @@ for FILE in *.cfg; do
   mysql -u"${FLAGS_user}" --database=$FLAGS_database --execute "analyze table $TABLE;"
 done
 
+cat $TDIR/xtrabackup_binlog_*
 rm -rf $TDIR
