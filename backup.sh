@@ -1,3 +1,5 @@
+#! /bin/bash
+
 BASEDIR=$(dirname $0)
 SHFLAGS_LIB_PATH=$BASEDIR/lib/shflags
 
