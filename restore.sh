@@ -10,10 +10,11 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # FLAGS
-DEFINE_string 'file'		''			''	'f'	'required'
-DEFINE_string 'database'	''			''	'db'	'required'
-DEFINE_string 'datadir'		'/var/lib/mysql'	''	'dd'
-DEFINE_string 'user'		'xtrabackup'		''	'u'
+DEFINE_string 'file'     ''               '' 'f'  'required'
+DEFINE_string 'database' ''               '' 'db' 'required'
+DEFINE_string 'charset'  'utf8'           '' 'cs'
+DEFINE_string 'datadir'  '/var/lib/mysql' '' 'dd'
+DEFINE_string 'user'     'xtrabackup'     '' 'u'
 
 # parse the command-line
 FLAGS "$@" || exit 1
@@ -21,7 +22,7 @@ eval set -- "${FLAGS_ARGV}"
 
 mysql -u"${FLAGS_user}" --execute "drop database if exists ${FLAGS_database};" 2> /dev/null
 rm -rf $FLAGS_datadir/$FLAGS_database
-mysql -u"${FLAGS_user}" --execute "create database ${FLAGS_database};" || exit 1
+mysql -u"${FLAGS_user}" --execute "create database ${FLAGS_database} default character set ${FLAGS_charset};" || exit 1
 
 TDIR=`mktemp -d`
 trap "{ cd - ; rm -rf $TDIR; exit 255; }" SIGINT
