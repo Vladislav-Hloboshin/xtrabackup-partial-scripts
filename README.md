@@ -1,4 +1,4 @@
-xtrabackup-partial-scripts
+usage
 ==========================
 sudo ./backup.sh --database="database" --file="file.tar.gz"
 
