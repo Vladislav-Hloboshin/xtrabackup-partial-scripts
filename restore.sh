@@ -11,9 +11,9 @@ fi
 
 # FLAGS
 DEFINE_string 'file'     ''               '' 'f'  'required'
-DEFINE_string 'database' ''               '' 'db' 'required'
-DEFINE_string 'charset'  'utf8'           '' 'cs'
-DEFINE_string 'datadir'  '/var/lib/mysql' '' 'dd'
+DEFINE_string 'database' ''               '' 'b' 'required'
+DEFINE_string 'charset'  'utf8'           '' 'c'
+DEFINE_string 'datadir'  '/var/lib/mysql' '' 'd'
 DEFINE_string 'user'     'xtrabackup'     '' 'u'
 
 # parse the command-line

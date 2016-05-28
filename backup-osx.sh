@@ -21,7 +21,7 @@ eval set -- "${FLAGS_ARGV}"
 TDIR=`mktemp -d`
 trap "{ cd - ; rm -rf $TDIR; exit 255; }" SIGINT
 
-xtrabackup --backup --user="${FLAGS_user}"  --databases=$FLAGS_database --target-dir=$TDIR
+xtrabackup --defaults-file=/usr/local/mysql/my.cnf --backup --user="${FLAGS_user}"  --databases=$FLAGS_database --target-dir=$TDIR
 
 mysqldump --user="${FLAGS_user}" --no-data --single-transaction --routines $FLAGS_database | sed '/ALTER DATABASE/d' > $TDIR/$FLAGS_database/ddl.sql
 
