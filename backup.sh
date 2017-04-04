@@ -10,9 +10,9 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # FLAGS
-DEFINE_string 'database' ''           '' 'b' 'required'
-DEFINE_string 'file'     ''           '' 'f'  'required'
-DEFINE_string 'user'     'xtrabackup' '' 'u'
+DEFINE_string 'database'    ''           '' 'b' 'required'
+DEFINE_string 'backupfile'  ''           '' 'f' 'required'
+DEFINE_string 'user'        'xtrabackup' '' 'u'
 
 # parse the command-line
 FLAGS "$@" || exit 1
@@ -31,6 +31,6 @@ rm -f $TDIR/ibdata1
 
 mv $TDIR/xtrabackup_* $TDIR/$FLAGS_database
 
-rm -f $FLAGS_file
-tar -cpvzf $FLAGS_file -C $TDIR/$FLAGS_database .
+rm -f $FLAGS_backupfile
+tar -cpvzf $FLAGS_backupfile -C $TDIR/$FLAGS_database .
 rm -rf $TDIR
